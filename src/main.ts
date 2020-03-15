@@ -31,11 +31,12 @@ engine.input.keyboard.on('press', (evt: ex.Input.KeyEvent) => {
 });
 
 engine.start(loader).then(() => {
-   Sounds.laserSound.volume = Config.soundVolume;
-   Sounds.explodeSound.volume = Config.soundVolume;
-   Sounds.enemyFireSound.volume = Config.soundVolume;
-   Sounds.powerUp.volume = Config.soundVolume;
-   Sounds.rocketSound.volume = Config.soundVolume;
+   Sounds.laserSound.volume = 0;
+   Sounds.explodeSound.volume = 0;
+   Sounds.enemyFireSound.volume = 0;
+   Sounds.powerUp.volume = 0;
+   Sounds.rocketSound.volume = 0;
    
    console.log("Game Resources Loaded");
+   console.log('Testando');
 });

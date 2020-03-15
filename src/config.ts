@@ -1,7 +1,7 @@
 // configuration
 
 const Config = {
-   soundVolume : .1,
+   soundVolume : 0,
    playerBulletVelocity : -600,
    playerSpeed : 500,
    playerFireThrottle : 200,
