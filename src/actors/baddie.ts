@@ -15,7 +15,7 @@ export class Baddie extends ex.Actor {
     private fireAngle: number = Math.random() * Math.PI * 2;
     constructor(x: number, y: number, width: number, height: number) {
         super({
-            pos: new ex.Vector(x, y),
+            pos: new ex.Vector(x, 100),
             width: width,
             height: height,
         });
@@ -33,24 +33,26 @@ export class Baddie extends ex.Actor {
         // Initialize actor
 
         // Setup visuals
-        this.anim = gameSheet.getAnimationByIndices(engine, [10, 11, 12], 100)
-        this.anim.scale = new ex.Vector(4, 4);
-        this.addDrawing("default", this.anim);
+        // this.anim = gameSheet.getAnimationByIndices(engine, [10, 11, 12], 100)
+        // this.anim.scale = new ex.Vector(4, 4);
+        // this.addDrawing("default", this.anim);
+
+        const alvo = Images.alvo.asSprite();
+        alvo.scale = new ex.Vector(0.5, 0.5);
+        this.addDrawing(alvo);
 
         this.explode = explosionSpriteSheet.getAnimationForAll(engine, 40);
         this.explode.scale = new ex.Vector(3, 3);
         this.explode.loop = false;
 
         // Setup patrolling behavior
-        this.actions.moveTo(this.pos.x, this.pos.y + 800, Config.enemySpeed)
-                    .moveTo(this.pos.x + 800, this.pos.y, Config.enemySpeed)
-                    .moveTo(this.pos.x + 800, this.pos.y + 800, Config.enemySpeed)
+        this.actions.moveTo(this.pos.x + 800, this.pos.y, Config.enemySpeed)
                     .moveTo(this.pos.x, this.pos.y, Config.enemySpeed)
                     .repeatForever();
 
         // Setup firing timer, repeats forever
-        this.fireTimer = new ex.Timer(() => { this.fire(engine) }, Config.enemyFireInterval, true, -1);
-        engine.addTimer(this.fireTimer);
+        // this.fireTimer = new ex.Timer(() => { this.fire(engine) }, Config.enemyFireInterval, true, -1);
+        // engine.addTimer(this.fireTimer);
 
     }
 
