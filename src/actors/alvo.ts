@@ -20,7 +20,7 @@ export class Alvo extends ex.Actor {
     callback: Function;
     constructor(x: number, y: number, width: number, height: number, opcao: string, rodada: number, callback: Function) {
         super({
-            pos: new ex.Vector(x, 100),
+            pos: new ex.Vector(x, y),
             width: width,
             height: height,
         });
@@ -48,7 +48,7 @@ export class Alvo extends ex.Actor {
         alvo.scale = new ex.Vector(0.5, 0.5);
         this.addDrawing(alvo);
 
-        this.texto = new ex.Label(this.opcao, this.pos.x - 50, 250);
+        this.texto = new ex.Label(this.opcao, this.pos.x - 50, 260);
         this.texto.color = ex.Color.White;
         this.texto.scale = new ex.Vector(3, 3);
         engine.add(this.texto);
@@ -58,8 +58,9 @@ export class Alvo extends ex.Actor {
         this.explode.loop = false;
         
         // Setup patrolling behavior
-        this.texto.actions.moveTo(this.pos.x - 50 + 400, 250, this.rodada * Config.startSpeed)
-            .moveTo(this.pos.x - 50, 250, this.rodada * Config.startSpeed)
+        const textoX = this.pos.x - 50
+        this.texto.actions.moveTo(textoX + 400, 260, this.rodada * Config.startSpeed)
+            .moveTo(textoX, 260, this.rodada * Config.startSpeed)
             .repeatForever();
 
         this.actions.moveTo(this.pos.x + 400, this.pos.y, this.rodada * Config.startSpeed)

@@ -19,12 +19,29 @@ export class Game extends ex.Scene {
           'Tarde',
           'Noite'
         ]
+      },
+      {
+        pergunta: 'Qual seu lazer preferido?',
+        opcoes: [
+          'Ler',
+          'Jogar',
+          'Assistir'
+        ]
+      },
+      {
+        pergunta: 'Qual animal você mais gosta?',
+        opcoes: [
+          'Cachorro',
+          'Gato',
+          'Pássaros'
+        ]
       }
     ];
 
     alvosAtuais: Array<Alvo> = [];
     rodadaAtual: number;
     questaoAtual: any;
+    labelQuestao: ex.Label | undefined;
 
     respostasJogador: Array<{questao: any, respostaJogador: string}> = [];
 
@@ -67,11 +84,18 @@ export class Game extends ex.Scene {
 
     }
     novaRodada() {
-      this.questaoAtual = this.questoes[0];
+      this.questaoAtual = this.questoes[Math.floor((Math.random() * 10)) % this.questoes.length];
 
       let i = 0;
+
+      this.labelQuestao?.kill();
+      this.labelQuestao = new ex.Label(this.questaoAtual.pergunta, 400, 50);
+      this.labelQuestao.color = ex.Color.White;
+      this.labelQuestao.scale = new ex.Vector(4, 4);
+      this.engine.add(this.labelQuestao);
+
       for (const opcao of this.questaoAtual.opcoes) {
-        const alvo = new Alvo(400 + 200*i, 200, 80, 80, opcao, this.rodadaAtual, this.callback.bind(this));
+        const alvo = new Alvo(400 + 200*i, 150, 80, 80, opcao, this.rodadaAtual, this.callback.bind(this));
         this.engine.add(alvo);
         this.alvosAtuais.push(alvo);
         i++;
@@ -84,6 +108,7 @@ export class Game extends ex.Scene {
       // chamar nova rodada
       this.respostasJogador.push({questao: this.questaoAtual, respostaJogador: resposta});
       await this.limparOpcoes();
+      this.rodadaAtual += 0.2;
       this.novaRodada();
     }
 
