@@ -5,7 +5,7 @@ import { Sounds, loader } from './resources';
 import { Game } from './game';
 
 const engine = new ex.Engine({
-    backgroundColor: ex.Color.Black
+    backgroundColor: ex.Color.Cyan
 });
 engine.backgroundColor = ex.Color.Black;
 engine.setAntialiasing(false);

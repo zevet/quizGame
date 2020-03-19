@@ -4,6 +4,7 @@ import Config from "../config";
 import { Bullet } from "./bullet";
 import { animManager } from "./animation-manager";
 import { stats } from "../stats";
+import { Inimigo } from "./inimigo";
 
 export class Alvo extends ex.Actor {
     // All bullets belonging to baddies
@@ -59,12 +60,12 @@ export class Alvo extends ex.Actor {
         
         // Setup patrolling behavior
         const textoX = this.pos.x - 50
-        this.texto.actions.moveTo(textoX + 400, 260, this.rodada * Config.startSpeed)
-            .moveTo(textoX, 260, this.rodada * Config.startSpeed)
+        this.texto.actions.moveTo(textoX + 400, 260, this.rodada * 1.2 * Config.startSpeed)
+            .moveTo(textoX, 260, this.rodada* 1.2 * Config.startSpeed)
             .repeatForever();
 
-        this.actions.moveTo(this.pos.x + 400, this.pos.y, this.rodada * Config.startSpeed)
-            .moveTo(this.pos.x, this.pos.y, this.rodada * Config.startSpeed)
+        this.actions.moveTo(this.pos.x + 400, this.pos.y, this.rodada* 1.2 * Config.startSpeed)
+            .moveTo(this.pos.x, this.pos.y, this.rodada * 1.2 * Config.startSpeed)
             .repeatForever();
 
         // Setup firing timer, repeats forever
@@ -80,17 +81,21 @@ export class Alvo extends ex.Actor {
     // Fires before excalibur collision resoulation
     private onPreCollision(evt: ex.PreCollisionEvent) {
         // only kill a baddie if it collides with something that isn't a baddie or a baddie bullet
-        if(!(evt.other instanceof Alvo) &&
+        if(!(evt.other instanceof Alvo || evt.other instanceof Inimigo) &&
            !ex.Util.contains(Alvo.Bullets, evt.other)) {
-            Sounds.explodeSound.play();
-            this.callback(this.opcao)
-            if (this.explode) {
-                animManager.play(this.explode, this.pos);
-            }
-
-            stats.score += 100;
-            if (this.fireTimer) {
-                this.fireTimer.cancel();
+            if ((evt.other instanceof Bullet)) {
+                if (!(evt.other.isEnemy)) {
+                    Sounds.explodeSound.play();
+                    this.callback(this.opcao)
+                    if (this.explode) {
+                        animManager.play(this.explode, this.pos);
+                    }
+        
+                    stats.score += 100;
+                    if (this.fireTimer) {
+                        this.fireTimer.cancel();
+                    }
+                }
             }
          }
     }

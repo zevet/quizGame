@@ -5,7 +5,8 @@ import { Alvo } from "./alvo";
 
 export class Bullet extends ex.Actor {
     public owner?: ex.Actor;
-    constructor(x: number, y: number, dx: number, dy: number, owner?: ex.Actor) {
+    isEnemy: boolean;
+    constructor(x: number, y: number, dx: number, dy: number, owner?: ex.Actor, isEnemy: boolean = false) {
         super({
             pos: new ex.Vector(x, y),
             vel: new ex.Vector(dx, dy),
@@ -14,6 +15,7 @@ export class Bullet extends ex.Actor {
         });
         this.body.collider.type = ex.CollisionType.Passive;
         this.owner = owner;
+        this.isEnemy = isEnemy;
     }
     
     onInitialize(engine: ex.Engine) {
@@ -21,13 +23,16 @@ export class Bullet extends ex.Actor {
         // Clean up on exit viewport
         this.on('exitviewport', () => this.killAndRemoveFromBullets());
 
-        // const anim = gameSheet.getAnimationByIndices(engine, [3, 4, 5, 6, 7, 8, 7, 6, 5, 4], 100);
-        // anim.scale = new ex.Vector(2, 2);
-        // this.addDrawing('default', anim);
+        if (this.isEnemy) {
+            const anim = gameSheet.getAnimationByIndices(engine, [3, 4, 5, 6, 7, 8, 7, 6, 5, 4], 100);
+            anim.scale = new ex.Vector(2, 2);
+            this.addDrawing('default', anim);
+        } else {
+            const dardo = Images.dardo.asSprite();
+            dardo.scale = new ex.Vector(0.2, 0.2);
+            this.addDrawing('default', dardo);
+        }
 
-        const dardo = Images.dardo.asSprite();
-        dardo.scale = new ex.Vector(0.2, 0.2);
-        this.addDrawing(dardo);
     }
 
     private onPreCollision(evt: ex.PreCollisionEvent) {

@@ -5,6 +5,7 @@ import { Bullet } from "./bullet";
 import { Alvo } from "./alvo";
 import { animManager } from "./animation-manager";
 import { stats } from "../stats";
+import { Inimigo } from "./inimigo";
 
 type FireFunction = (engine: ex.Engine) => void;
 const throttle = function(this: any, func: FireFunction, throttle: number): FireFunction {
@@ -65,7 +66,7 @@ export class Dardo extends ex.Actor {
     }
 
     onPreCollision(evt: ex.PreCollisionEvent) {
-        if(evt.other instanceof Alvo || ex.Util.contains(Alvo.Bullets, evt.other)){
+        if(evt.other instanceof Alvo || ex.Util.contains(Alvo.Bullets, evt.other) || evt.other instanceof Inimigo || ex.Util.contains(Inimigo.Bullets, evt.other)){
             Sounds.hitSound.play();
             this.actions.blink(300, 300, 3);
             stats.hp -= Config.enemyDamage;
@@ -79,7 +80,6 @@ export class Dardo extends ex.Actor {
     onPostUpdate(engine: ex.Engine, delta: number) {
         if (stats.hp <= 0 && this.explode) {
             // update game to display game over
-            // gameOver = true;
             animManager.play(this.explode, this.pos);
             Sounds.explodeSound.play();
             this.kill();
