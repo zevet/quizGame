@@ -5,7 +5,7 @@ import { Bullet } from "./bullet";
 import { animManager } from "./animation-manager";
 import { stats } from "../stats";
 
-export class Baddie extends ex.Actor {
+export class Alvo extends ex.Actor {
     // All bullets belonging to baddies
     public static Bullets: Bullet[] = [];
 
@@ -13,13 +13,20 @@ export class Baddie extends ex.Actor {
     private explode?: ex.Animation;
     private fireTimer?: ex.Timer;
     private fireAngle: number = Math.random() * Math.PI * 2;
-    constructor(x: number, y: number, width: number, height: number) {
+
+    opcao: string;
+    texto: ex.Actor | undefined;
+    rodada: number;
+    callback: Function;
+    constructor(x: number, y: number, width: number, height: number, opcao: string, rodada: number, callback: Function) {
         super({
             pos: new ex.Vector(x, 100),
             width: width,
             height: height,
         });
-
+        this.opcao = opcao;
+        this.rodada = rodada;
+        this.callback = callback;
         // Passive recieves collision events but does not participate in resolution
         this.body.collider.type = ex.CollisionType.Passive;
 
@@ -41,14 +48,23 @@ export class Baddie extends ex.Actor {
         alvo.scale = new ex.Vector(0.5, 0.5);
         this.addDrawing(alvo);
 
+        this.texto = new ex.Label(this.opcao, this.pos.x - 50, 250);
+        this.texto.color = ex.Color.White;
+        this.texto.scale = new ex.Vector(3, 3);
+        engine.add(this.texto);
+        
         this.explode = explosionSpriteSheet.getAnimationForAll(engine, 40);
         this.explode.scale = new ex.Vector(3, 3);
         this.explode.loop = false;
-
+        
         // Setup patrolling behavior
-        this.actions.moveTo(this.pos.x + 800, this.pos.y, Config.enemySpeed)
-                    .moveTo(this.pos.x, this.pos.y, Config.enemySpeed)
-                    .repeatForever();
+        this.texto.actions.moveTo(this.pos.x - 50 + 400, 250, this.rodada * Config.startSpeed)
+            .moveTo(this.pos.x - 50, 250, this.rodada * Config.startSpeed)
+            .repeatForever();
+
+        this.actions.moveTo(this.pos.x + 400, this.pos.y, this.rodada * Config.startSpeed)
+            .moveTo(this.pos.x, this.pos.y, this.rodada * Config.startSpeed)
+            .repeatForever();
 
         // Setup firing timer, repeats forever
         // this.fireTimer = new ex.Timer(() => { this.fire(engine) }, Config.enemyFireInterval, true, -1);
@@ -56,12 +72,17 @@ export class Baddie extends ex.Actor {
 
     }
 
+    destroyOption() {
+        this.kill();
+        this.texto?.kill();
+    }
     // Fires before excalibur collision resoulation
     private onPreCollision(evt: ex.PreCollisionEvent) {
         // only kill a baddie if it collides with something that isn't a baddie or a baddie bullet
-        if(!(evt.other instanceof Baddie) &&
-           !ex.Util.contains(Baddie.Bullets, evt.other)) {
+        if(!(evt.other instanceof Alvo) &&
+           !ex.Util.contains(Alvo.Bullets, evt.other)) {
             Sounds.explodeSound.play();
+            this.callback(this.opcao)
             if (this.explode) {
                 animManager.play(this.explode, this.pos);
             }
@@ -70,7 +91,6 @@ export class Baddie extends ex.Actor {
             if (this.fireTimer) {
                 this.fireTimer.cancel();
             }
-            this.kill();
          }
     }
 
@@ -82,7 +102,7 @@ export class Baddie extends ex.Actor {
             Config.enemyBulletVelocity * Math.sin(this.fireAngle));
 
         const bullet = new Bullet(this.pos.x, this.pos.y, bulletVelocity.x, bulletVelocity.y, this);
-        Baddie.Bullets.push(bullet);
+        Alvo.Bullets.push(bullet);
         engine.add(bullet);
     }
 }

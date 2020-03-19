@@ -2,7 +2,7 @@ import * as ex from "excalibur";
 import { gameSheet, Sounds, explosionSpriteSheet, Images } from "../resources";
 import Config from "../config";
 import { Bullet } from "./bullet";
-import { Baddie } from "./baddie";
+import { Alvo } from "./alvo";
 import { animManager } from "./animation-manager";
 import { stats } from "../stats";
 
@@ -20,7 +20,7 @@ const throttle = function(this: any, func: FireFunction, throttle: number): Fire
     }
  }
 
-export class Ship extends ex.Actor {
+export class Dardo extends ex.Actor {
     private flipBarrel = false;
     private throttleFire?: FireFunction;
     private explode?: ex.Animation;
@@ -65,7 +65,7 @@ export class Ship extends ex.Actor {
     }
 
     onPreCollision(evt: ex.PreCollisionEvent) {
-        if(evt.other instanceof Baddie || ex.Util.contains(Baddie.Bullets, evt.other)){
+        if(evt.other instanceof Alvo || ex.Util.contains(Alvo.Bullets, evt.other)){
             Sounds.hitSound.play();
             this.actions.blink(300, 300, 3);
             stats.hp -= Config.enemyDamage;

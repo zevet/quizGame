@@ -7,7 +7,7 @@ const Config = {
    playerFireThrottle : 200,
    missileSpeed : -400,
    enemyBulletVelocity : -300,
-   enemySpeed : 200,
+   startSpeed : 200,
    enemyFireInterval: 900,
    enemyDamage : 10,
    bulletSize: 5,

@@ -38,5 +38,4 @@ engine.start(loader).then(() => {
    Sounds.rocketSound.volume = 0;
    
    console.log("Game Resources Loaded");
-   console.log('Testando');
 });
