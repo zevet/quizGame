@@ -78,13 +78,6 @@ export class Dardo extends ex.Actor {
     }
 
     onPostUpdate(engine: ex.Engine, delta: number) {
-        if (stats.hp <= 0 && this.explode) {
-            // update game to display game over
-            animManager.play(this.explode, this.pos);
-            Sounds.explodeSound.play();
-            this.kill();
-         }
-
         // Keep player in the viewport
        if(this.pos.x < 0) this.pos.x = 0;
        if(this.pos.y < 0) this.pos.y = 0;
@@ -96,6 +89,9 @@ export class Dardo extends ex.Actor {
         let bullet = new Bullet(this.pos.x + (this.flipBarrel?-40:40), this.pos.y - 20, 0, Config.playerBulletVelocity, this);
         this.flipBarrel = !this.flipBarrel;
         Sounds.laserSound.play();
+		if(stats.bullets > 0){
+		stats.bullets -= 1;
+		}
         engine.add(bullet);
     }
 
@@ -120,10 +116,9 @@ export class Dardo extends ex.Actor {
             }
         }
         // Some keys do the same thing
-        if (evt.key === ex.Input.Keys.Up ||
-            evt.key === ex.Input.Keys.W) {
-            dir.y += -1;
-        }
+
+
+
 
         if (evt.key === ex.Input.Keys.Left ||
             evt.key === ex.Input.Keys.A) {
@@ -135,10 +130,7 @@ export class Dardo extends ex.Actor {
             dir.x += 1;
         }
 
-        if (evt.key === ex.Input.Keys.Down ||
-            evt.key ===  ex.Input.Keys.S) {
-            dir.y += 1;
-        }
+
 
         if (dir.x !== 0 || dir.y !== 0) {
             this.vel = dir.normalize().scale(Config.playerSpeed);

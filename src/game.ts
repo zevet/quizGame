@@ -64,30 +64,29 @@ export class Game extends ex.Scene {
     engine.add(animManager);
 
     this.desenharDardo(engine);
-    this.desenharBarraDeVida(engine);
-    this.desenharPontuacao(engine);
+	this.desenharBullets(engine);
 
-    let baddieTimer = new ex.Timer(
-      () => {
-        const bad = new Inimigo(Math.random() * 1000 + 200, -100, 80, 80);
-        this.inimigos.push(bad);
-        engine.add(bad);
-      },
-      Config.spawnTime,
-      true,
-      -1
-    );
+     let baddieTimer = new ex.Timer(
+       () => {
+         const bad = new Inimigo(Math.random() * 1000 + 200, -100, 80, 80);
+         //this.inimigos.push(bad);
+         //engine.add(bad);
+       },
+       Config.spawnTime,
+       true,
+       -1
+     );
 
     engine.addTimer(baddieTimer);
 
     this.novaRodada();
 
     engine.on("preupdate", (evt: ex.PreUpdateEvent) => {
-      if (stats.gameOver && !this.finalizado) {
+      if ((stats.gameOver && !this.finalizado) || stats.bullets <= 0) {
         this.finalizado = true;
         let message: string;
         let color;
-        if(stats.hp <= 0) {
+        if(stats.bullets <= 0) {
           message = 'Você não conseguiu responder todas perguntas :(';
           color = ex.Color.Red;
         } else {
@@ -165,19 +164,17 @@ export class Game extends ex.Scene {
     engine.add(dardo);
   }
 
-  desenharBarraDeVida(engine: ex.Engine) {
-    const healthBar = new HealthBar();
-    engine.add(healthBar);
-  }
 
-  desenharPontuacao(engine: ex.Engine) {
-    const scoreLabel = new ex.Label("Pontuação: " + stats.score, 20, 50);
-    scoreLabel.color = ex.Color.Azure;
-    scoreLabel.scale = new ex.Vector(3, 3);
-    scoreLabel.on("preupdate", function(this: ex.Label, evt) {
-      this.text = "Pontuação: " + stats.score;
+
+  
+    desenharBullets(engine: ex.Engine) {
+    const BulletsLabel = new ex.Label("Bullets: " + stats.bullets, 20, 50);
+    BulletsLabel.color = ex.Color.Azure;
+    BulletsLabel.scale = new ex.Vector(3, 3);
+    BulletsLabel.on("preupdate", function(this: ex.Label, evt) {
+      this.text = "Bullets: " + stats.bullets;
     });
-    engine.add(scoreLabel);
+    engine.add(BulletsLabel);
   }
 
   async limparOpcoes() {
