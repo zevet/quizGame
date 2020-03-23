@@ -46,15 +46,6 @@ export class Dardo extends ex.Actor {
                 this.vel = ex.Vector.Zero.clone()
             }
          });
-
-        // Pointer
-        engine.input.pointers.primary.on('down', (evt) => this.handlePointerEvent(engine, <ex.Input.PointerDownEvent>evt));
-        engine.input.pointers.primary.on('up', () => this.vel = ex.Vector.Zero.clone());
-
-        // Get animation
-        // const anim = gameSheet.getAnimationByIndices(engine, [0, 1, 2], 100);
-        // anim.scale = new ex.Vector(4, 4);
-        // this.addDrawing("default", anim);
         
         const dardo = Images.dardo.asSprite();
         dardo.scale = new ex.Vector(0.2, 0.2);

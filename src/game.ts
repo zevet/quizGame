@@ -8,6 +8,7 @@ import { Alvo } from "./actors/alvo";
 import Config from "./config";
 
 import { animManager } from "./actors/animation-manager";
+import { Images } from "./resources";
 
 export class Game extends ex.Scene {
   engine: ex.Engine;
@@ -35,14 +36,14 @@ export class Game extends ex.Scene {
   ];
 
   resultados = [
-    "Fábio Assunção",
-    "Caio Castro",
-    "Selton Melo",
-    "Tata Werneck",
-    "Regina Casé",
-    "Fafá de Belém",
-    "William Bonner",
-    "Thiago Leifert"
+    {nome: "Fábio Assunção", resourceName: 'fabioassuncao'},
+    {nome: "Regina Casé", resourceName: 'reginacase'},
+    {nome: 'Xuxa Meneguel', resourceName: 'xuxa'},
+    {nome: 'Eliana', resourceName: 'eliana'},
+    {nome: 'Ronaldinho Gaúcho', resourceName: 'ronaldinhogaucho'},
+    {nome: "Selton Mello", resourceName: "seltonmello"},
+    {nome: "Caetano Veloso", resourceName: "caetanoveloso"},
+    {nome: "William Bonner", resourceName: "williambonner"},
   ];
 
   alvosAtuais: Array<Alvo> = [];
@@ -64,50 +65,13 @@ export class Game extends ex.Scene {
     engine.add(animManager);
 
     this.desenharDardo(engine);
-	this.desenharBullets(engine);
-
-     let baddieTimer = new ex.Timer(
-       () => {
-         const bad = new Inimigo(Math.random() * 1000 + 200, -100, 80, 80);
-         //this.inimigos.push(bad);
-         //engine.add(bad);
-       },
-       Config.spawnTime,
-       true,
-       -1
-     );
-
-    engine.addTimer(baddieTimer);
+	  this.desenharBullets(engine);
 
     this.novaRodada();
 
     engine.on("preupdate", (evt: ex.PreUpdateEvent) => {
       if ((stats.gameOver && !this.finalizado) || stats.bullets <= 0) {
-        this.finalizado = true;
-        let message: string;
-        let color;
-        if(stats.bullets <= 0) {
-          message = 'Você não conseguiu responder todas perguntas :(';
-          color = ex.Color.Red;
-        } else {
-          message = "Você tem os mesmos gostos do (a) " +
-          this.resultados[
-            Math.floor(Math.random() * 10) % this.resultados.length
-          ];
-          color = ex.Color.Green;
-        }
-        const gameOverLabel = new ex.Label(
-          message,
-          engine.halfDrawWidth - 250,
-          engine.halfDrawHeight
-        );
-        gameOverLabel.color = color;
-        gameOverLabel.scale = new ex.Vector(3, 3);
-        gameOverLabel.actions.blink(1000, 1000, 400).repeatForever();
-        engine.add(gameOverLabel);
-        this.inimigos.forEach(i => i.destroyOption());
-        this.alvosAtuais.forEach(a => a.destroyOption());
-        this.labelQuestao?.kill();
+        this.finalizarJogo(engine);
       }
     });
   }
@@ -119,19 +83,20 @@ export class Game extends ex.Scene {
     let i = 0;
 
     this.labelQuestao?.kill();
-    this.labelQuestao = new ex.Label(this.questaoAtual.pergunta, 400, 50);
+    this.labelQuestao = new ex.Label(this.questaoAtual.pergunta, this.engine.halfCanvasWidth - (this.questaoAtual.pergunta.length * 10 ), 50);
     this.labelQuestao.color = ex.Color.White;
     this.labelQuestao.scale = new ex.Vector(4, 4);
     this.engine.add(this.labelQuestao);
 
     for (const opcao of this.questaoAtual.opcoes) {
       const alvo = new Alvo(
-        400 + 200 * i,
+        100 + 200 * i,
         150,
         80,
         80,
         opcao,
         this.rodadaAtual,
+        this.questaoAtual.opcoes.length,
         this.callback.bind(this)
       );
       this.engine.add(alvo);
@@ -140,7 +105,6 @@ export class Game extends ex.Scene {
     }
   }
   async callback(resposta: string) {
-    console.log("resposta", resposta);
     // guardar resposta
     // matar os alvos
     // chamar nova rodada
@@ -164,15 +128,12 @@ export class Game extends ex.Scene {
     engine.add(dardo);
   }
 
-
-
-  
-    desenharBullets(engine: ex.Engine) {
-    const BulletsLabel = new ex.Label("Bullets: " + stats.bullets, 20, 50);
+  desenharBullets(engine: ex.Engine) {
+    const BulletsLabel = new ex.Label("Dardos: " + stats.bullets, 20, 50);
     BulletsLabel.color = ex.Color.Azure;
     BulletsLabel.scale = new ex.Vector(3, 3);
     BulletsLabel.on("preupdate", function(this: ex.Label, evt) {
-      this.text = "Bullets: " + stats.bullets;
+      this.text = "Dardos: " + stats.bullets;
     });
     engine.add(BulletsLabel);
   }
@@ -183,5 +144,44 @@ export class Game extends ex.Scene {
     }
     this.alvosAtuais.splice(0, this.alvosAtuais.length);
     return;
+  }
+
+  finalizarJogo(engine: ex.Engine) {
+    this.finalizado = true;
+    let message: string;
+    let color;
+    if(stats.bullets <= 0) {
+      message = 'Você não conseguiu responder todas perguntas :(';
+      color = ex.Color.Red;
+    } else {
+      const indexResultado = Math.floor(Math.random() * 10) % this.resultados.length;
+      message = "Você tem os mesmos gostos do (a) " +
+      this.resultados[
+        indexResultado
+      ].nome;
+      color = ex.Color.Green;
+      this.desenharFoto(engine, indexResultado);
+    }
+    const gameOverLabel = new ex.Label(
+      message,
+      engine.halfDrawWidth - (message.length * 7),
+      150
+    );
+    gameOverLabel.color = color;
+    gameOverLabel.scale = new ex.Vector(3, 3);
+    gameOverLabel.actions.blink(1000, 1000, 400).repeatForever();
+    engine.add(gameOverLabel);
+    this.inimigos.forEach(i => i.destroyOption());
+    this.alvosAtuais.forEach(a => a.destroyOption());
+    this.labelQuestao?.kill();
+  }
+
+  desenharFoto(engine: ex.Engine, index: number) {
+    const foto = Images[this.resultados[index].resourceName];
+    const spriteFoto = foto.asSprite();
+    spriteFoto.scale = new ex.Vector(0.6, 0.6);
+    const actor = new ex.Actor(engine.halfCanvasWidth, engine.halfCanvasHeight, spriteFoto.drawWidth, spriteFoto.drawHeight);
+    actor.addDrawing(spriteFoto);
+    engine.add(actor);
   }
 }

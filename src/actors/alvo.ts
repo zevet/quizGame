@@ -1,5 +1,5 @@
 import * as ex from "excalibur";
-import { Images, Sounds, gameSheet, explosionSpriteSheet } from "../resources";
+import { Images, Sounds, explosionSpriteSheet } from "../resources";
 import Config from "../config";
 import { Bullet } from "./bullet";
 import { animManager } from "./animation-manager";
@@ -10,22 +10,21 @@ export class Alvo extends ex.Actor {
     // All bullets belonging to baddies
     public static Bullets: Bullet[] = [];
 
-    private anim?: ex.Animation;
     private explode?: ex.Animation;
-    private fireTimer?: ex.Timer;
-    private fireAngle: number = Math.random() * Math.PI * 2;
 
     opcao: string;
     texto: ex.Actor | undefined;
+    numberOfItens: number;
     rodada: number;
     callback: Function;
-    constructor(x: number, y: number, width: number, height: number, opcao: string, rodada: number, callback: Function) {
+    constructor(x: number, y: number, width: number, height: number, opcao: string, rodada: number, numberOfItens: number, callback: Function) {
         super({
             pos: new ex.Vector(x, y),
             width: width,
             height: height,
         });
         this.opcao = opcao;
+        this.numberOfItens = numberOfItens;
         this.rodada = rodada;
         this.callback = callback;
         // Passive recieves collision events but does not participate in resolution
@@ -39,11 +38,6 @@ export class Alvo extends ex.Actor {
     // OnInitialize is called before the 1st actor update
     onInitialize(engine: ex.Engine) {
         // Initialize actor
-
-        // Setup visuals
-        // this.anim = gameSheet.getAnimationByIndices(engine, [10, 11, 12], 100)
-        // this.anim.scale = new ex.Vector(4, 4);
-        // this.addDrawing("default", this.anim);
 
         const alvo = Images.alvo.asSprite();
         alvo.scale = new ex.Vector(0.5, 0.5);
@@ -60,20 +54,15 @@ export class Alvo extends ex.Actor {
         
         // Setup patrolling behavior
         const textoX = this.pos.x - 50
-        this.texto.actions.moveTo(textoX + 400, 260, this.rodada * 1.2 * Config.startSpeed)
+        this.texto.actions.moveTo(textoX + engine.browser.window.nativeComponet.window.innerWidth - (this.numberOfItens * 185), 260, this.rodada * 1.2 * Config.startSpeed)
             .moveTo(textoX, 260, this.rodada* 1.2 * Config.startSpeed)
             .repeatForever();
 
-        this.actions.moveTo(this.pos.x + 400, this.pos.y, this.rodada* 1.2 * Config.startSpeed)
+        this.actions.moveTo(this.pos.x + engine.browser.window.nativeComponet.window.innerWidth - (this.numberOfItens * 185), this.pos.y, this.rodada* 1.2 * Config.startSpeed)
             .moveTo(this.pos.x, this.pos.y, this.rodada * 1.2 * Config.startSpeed)
             .repeatForever();
-
-        // Setup firing timer, repeats forever
-        // this.fireTimer = new ex.Timer(() => { this.fire(engine) }, Config.enemyFireInterval, true, -1);
-        // engine.addTimer(this.fireTimer);
-
     }
-
+    
     destroyOption() {
         this.kill();
         this.texto?.kill();
@@ -92,23 +81,8 @@ export class Alvo extends ex.Actor {
                     }
         
                     stats.score += 100;
-                    if (this.fireTimer) {
-                        this.fireTimer.cancel();
-                    }
                 }
             }
          }
-    }
-
-
-    private fire(engine: ex.Engine) {
-        this.fireAngle += Math.PI/20;
-        const bulletVelocity = new ex.Vector(
-            Config.enemyBulletVelocity * Math.cos(this.fireAngle),
-            Config.enemyBulletVelocity * Math.sin(this.fireAngle));
-
-        const bullet = new Bullet(this.pos.x, this.pos.y, bulletVelocity.x, bulletVelocity.y, this);
-        Alvo.Bullets.push(bullet);
-        engine.add(bullet);
     }
 }
