@@ -77,23 +77,15 @@ export class Dardo extends ex.Actor {
     }
 
     private fire = (engine: ex.Engine) => {
-        let bullet = new Bullet(this.pos.x + (this.flipBarrel?-40:40), this.pos.y - 20, 0, Config.playerBulletVelocity, this);
-        this.flipBarrel = !this.flipBarrel;
-        Sounds.laserSound.play();
-		if(stats.bullets > 0){
-		stats.bullets -= 1;
-		}
-        engine.add(bullet);
-    }
-
-    handlePointerEvent = (engine: ex.Engine, evt: ex.Input.PointerDownEvent) => {
-
-        let dir = evt.worldPos.sub(this.pos);
-        let distance = dir.magnitude();
-        if (distance > 50) {
-            this.vel = dir.scale(Config.playerSpeed/distance);
-        } else {
-            this.throttleFire ? this.throttleFire(engine) : null;
+        if (stats.canShot) {
+            let bullet = new Bullet(this.pos.x + (this.flipBarrel?-40:40), this.pos.y - 20, 0, Config.playerBulletVelocity, this);
+            this.flipBarrel = !this.flipBarrel;
+            Sounds.laserSound.play();
+            if(stats.bullets > 0){
+            stats.bullets -= 1;
+            }
+            stats.canShot = false;
+            engine.add(bullet);
         }
     }
 
@@ -101,15 +93,12 @@ export class Dardo extends ex.Actor {
         let dir = ex.Vector.Zero.clone();
 
         if (evt.key === ex.Input.Keys.Space) {
+
             this.throttleFire ? this.throttleFire(engine) : null;
             if (this.vel.x !== 0 || this.vel.y !== 0) {
                 dir = this.vel.normalize();
             }
         }
-        // Some keys do the same thing
-
-
-
 
         if (evt.key === ex.Input.Keys.Left ||
             evt.key === ex.Input.Keys.A) {

@@ -73,15 +73,14 @@ export class Alvo extends ex.Actor {
         if(!(evt.other instanceof Alvo || evt.other instanceof Inimigo) &&
            !ex.Util.contains(Alvo.Bullets, evt.other)) {
             if ((evt.other instanceof Bullet)) {
-                if (!(evt.other.isEnemy)) {
-                    Sounds.explodeSound.play();
-                    this.callback(this.opcao)
-                    if (this.explode) {
-                        animManager.play(this.explode, this.pos);
-                    }
-        
-                    stats.score += 100;
+                Sounds.explodeSound.play();
+                this.callback(this.opcao)
+                if (this.explode) {
+                    animManager.play(this.explode, this.pos);
                 }
+    
+                stats.canShot = true;
+                stats.score += 100;
             }
          }
     }

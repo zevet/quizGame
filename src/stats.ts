@@ -5,6 +5,7 @@ class Stats {
     public hp: number = Config.totalHp;
     public gameOver: boolean = false;
     public score: number = 0;
+    public canShot = true;
     public reset() {
 		this.bullets = 10;
         this.hp = Config.totalHp;

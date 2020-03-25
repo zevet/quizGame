@@ -85,7 +85,7 @@ export class Inimigo extends ex.Actor {
             Config.enemyBulletVelocity * Math.cos(this.fireAngle),
             Config.enemyBulletVelocity * Math.sin(this.fireAngle));
 
-        const bullet = new Bullet(this.pos.x, this.pos.y, bulletVelocity.x, bulletVelocity.y, this, true);
+        const bullet = new Bullet(this.pos.x, this.pos.y, bulletVelocity.x, bulletVelocity.y, this);
         Inimigo.Bullets.push(bullet);
         engine.add(bullet);
     }

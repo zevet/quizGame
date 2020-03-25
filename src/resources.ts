@@ -2,6 +2,7 @@ import * as ex from "excalibur";
 
 const dardo = require('../res/dardo.png');
 const alvo = require('../res/alvo.png');
+const nuvem = require('../res/cloud.png');
 const spriteexplosionFile = require('../res/spriteexplosion.png');
 const gameSheetFile = require('../res/gameSheet.png');
 const laserFile = require('../res/laser.wav');
@@ -24,6 +25,7 @@ const xuxa = require('../res/xuxa.jpg');
 const Images: { [key: string]: ex.Texture } = {
     dardo: new ex.Texture(dardo),
     alvo: new ex.Texture(alvo),
+    nuvem: new ex.Texture(nuvem),
     explosion: new ex.Texture(spriteexplosionFile),
     sheet: new ex.Texture(gameSheetFile),
     fabioassuncao: new ex.Texture(fabioAsssuncao),

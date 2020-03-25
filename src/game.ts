@@ -9,6 +9,7 @@ import Config from "./config";
 
 import { animManager } from "./actors/animation-manager";
 import { Images } from "./resources";
+import { Cloud } from "./actors/nuvem";
 
 export class Game extends ex.Scene {
   engine: ex.Engine;
@@ -64,10 +65,13 @@ export class Game extends ex.Scene {
   onInitialize(engine: ex.Engine) {
     engine.add(animManager);
 
+    this.desenharNuvens(engine);
+
     this.desenharDardo(engine);
 	  this.desenharBullets(engine);
 
     this.novaRodada();
+
 
     engine.on("preupdate", (evt: ex.PreUpdateEvent) => {
       if ((stats.gameOver && !this.finalizado) || stats.bullets <= 0) {
@@ -123,6 +127,16 @@ export class Game extends ex.Scene {
     }
   }
 
+  desenharNuvens(engine: ex.Engine) {
+    setTimeout(() => {
+      setInterval(() => {
+        const numeroDeNuvens = ex.Util.randomIntInRange(0, 3);
+        for (let i = 0; i < numeroDeNuvens; i++) {
+          engine.add(new Cloud());
+        }
+      }, 3000)
+    }, 1500);
+  }
   desenharDardo(engine: ex.Engine) {
     const dardo = new Dardo(engine.halfDrawWidth, 800, 80, 80);
     engine.add(dardo);
@@ -130,7 +144,7 @@ export class Game extends ex.Scene {
 
   desenharBullets(engine: ex.Engine) {
     const BulletsLabel = new ex.Label("Dardos: " + stats.bullets, 20, 50);
-    BulletsLabel.color = ex.Color.Azure;
+    BulletsLabel.color = ex.Color.White;
     BulletsLabel.scale = new ex.Vector(3, 3);
     BulletsLabel.on("preupdate", function(this: ex.Label, evt) {
       this.text = "Dardos: " + stats.bullets;
