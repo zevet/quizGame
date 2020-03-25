@@ -52,7 +52,8 @@ export class Game extends ex.Scene {
   rodadaAtual: number;
   questaoAtual: any;
   labelQuestao: ex.Label | undefined;
-
+  gameOverlabel: any;
+  fotoResposta: any;
   respostasJogador: Array<{ questao: any; respostaJogador: string }> = [];
 
   finalizado = false;
@@ -66,11 +67,16 @@ export class Game extends ex.Scene {
     engine.add(animManager);
 
     this.desenharNuvens(engine);
-
     this.desenharDardo(engine);
 	  this.desenharBullets(engine);
 
     this.novaRodada();
+
+    engine.input.keyboard.on('press', (evt: ex.Input.KeyEvent) => {
+      if (evt.key === ex.Input.Keys.R) {
+          this.resetar();
+      }
+  });
 
 
     engine.on("preupdate", (evt: ex.PreUpdateEvent) => {
@@ -128,14 +134,13 @@ export class Game extends ex.Scene {
   }
 
   desenharNuvens(engine: ex.Engine) {
-    setTimeout(() => {
-      setInterval(() => {
-        const numeroDeNuvens = ex.Util.randomIntInRange(0, 3);
-        for (let i = 0; i < numeroDeNuvens; i++) {
-          engine.add(new Cloud());
-        }
-      }, 3000)
-    }, 1500);
+    const tempo = new ex.Timer(() => {
+      const numeroDeNuvens = ex.Util.randomIntInRange(0, 3);
+      for (let i = 0; i < numeroDeNuvens; i++) {
+        engine.add(new Cloud());
+      }
+    }, 3000, true);
+    engine.addTimer(tempo);
   }
   desenharDardo(engine: ex.Engine) {
     const dardo = new Dardo(engine.halfDrawWidth, 800, 80, 80);
@@ -160,42 +165,60 @@ export class Game extends ex.Scene {
     return;
   }
 
-  finalizarJogo(engine: ex.Engine) {
-    this.finalizado = true;
-    let message: string;
-    let color;
-    if(stats.bullets <= 0) {
-      message = 'Você não conseguiu responder todas perguntas :(';
-      color = ex.Color.Red;
-    } else {
-      const indexResultado = Math.floor(Math.random() * 10) % this.resultados.length;
-      message = "Você tem os mesmos gostos do (a) " +
-      this.resultados[
-        indexResultado
-      ].nome;
-      color = ex.Color.Green;
-      this.desenharFoto(engine, indexResultado);
+  resetar() {
+    stats.reset();
+    this.finalizado = false;
+    if (this.gameOverlabel) {
+      console.log('removendo label')
+      this.gameOverlabel.kill();
     }
-    const gameOverLabel = new ex.Label(
-      message,
-      engine.halfDrawWidth - (message.length * 7),
-      150
-    );
-    gameOverLabel.color = color;
-    gameOverLabel.scale = new ex.Vector(3, 3);
-    gameOverLabel.actions.blink(1000, 1000, 400).repeatForever();
-    engine.add(gameOverLabel);
+    this.fotoResposta?.kill();
+    this.rodadaAtual = 1;
     this.inimigos.forEach(i => i.destroyOption());
     this.alvosAtuais.forEach(a => a.destroyOption());
     this.labelQuestao?.kill();
+    this.novaRodada();
+  }
+
+  finalizarJogo(engine: ex.Engine) {
+    console.log('finalizar jogo')
+    if (!this.finalizado) {
+      this.finalizado = true;
+      let message: string;
+      let color;
+      if(stats.bullets <= 0) {
+        message = 'Você não conseguiu responder todas perguntas :( R para jogar de novo';
+        color = ex.Color.Red;
+      } else {
+        const indexResultado = Math.floor(Math.random() * 10) % this.resultados.length;
+        message = "Você tem os mesmos gostos do (a) " +
+        this.resultados[
+          indexResultado
+        ].nome;
+        color = ex.Color.Green;
+        this.desenharFoto(engine, indexResultado);
+      }
+      this.gameOverlabel = new ex.Label(
+        message,
+        engine.halfDrawWidth - (message.length * 7),
+        150
+      );
+      this.gameOverlabel.color = color;
+      this.gameOverlabel.scale = new ex.Vector(3, 3);
+      this.gameOverlabel.actions.blink(1000, 1000, 400).repeatForever();
+      engine.add(this.gameOverlabel);
+      this.inimigos.forEach(i => i.destroyOption());
+      this.alvosAtuais.forEach(a => a.destroyOption());
+      this.labelQuestao?.kill();
+    }
   }
 
   desenharFoto(engine: ex.Engine, index: number) {
     const foto = Images[this.resultados[index].resourceName];
-    const spriteFoto = foto.asSprite();
-    spriteFoto.scale = new ex.Vector(0.6, 0.6);
-    const actor = new ex.Actor(engine.halfCanvasWidth, engine.halfCanvasHeight, spriteFoto.drawWidth, spriteFoto.drawHeight);
-    actor.addDrawing(spriteFoto);
-    engine.add(actor);
+    const sprite = foto.asSprite();
+    sprite.scale = new ex.Vector(0.6, 0.6);
+    this.fotoResposta = new ex.Actor(engine.halfCanvasWidth, engine.halfCanvasHeight, sprite.drawWidth, sprite.drawHeight);
+    this.fotoResposta.addDrawing(sprite);
+    engine.add(this.fotoResposta);
   }
 }

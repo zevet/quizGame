@@ -33,7 +33,7 @@ export class Bullet extends ex.Actor {
     }
 
     private onPreCollision(evt: ex.PreCollisionEvent) {
-        if (!(evt.other instanceof Bullet) && 
+        if ((evt.other instanceof Alvo) && 
             evt.other !== this.owner) {
                 this.killAndRemoveFromBullets();
         }

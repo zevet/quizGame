@@ -3,6 +3,7 @@ import * as ex from 'excalibur';
 import Config from './config';
 import { Sounds, loader } from './resources';
 import { Game } from './game';
+import { stats } from './stats';
 
 const engine = new ex.Engine({
     
