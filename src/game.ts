@@ -87,6 +87,7 @@ export class Game extends ex.Scene {
       const numeroSoteado = Math.floor(Math.random() * 10) % this.questoes.length;
       if (!this.perguntasJaFeitas.includes(numeroSoteado)) {
         this.questaoAtual = this.questoes[numeroSoteado];
+        this.perguntasJaFeitas.push(numeroSoteado);
       }
     } while(!this.questaoAtual)
 
@@ -169,6 +170,7 @@ export class Game extends ex.Scene {
       console.log('removendo label')
       this.gameOverlabel.kill();
     }
+    this.perguntasJaFeitas = [];
     this.fotoResposta?.kill();
     this.rodadaAtual = 1;
     this.alvosAtuais.forEach(a => a.destroyOption());
