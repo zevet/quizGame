@@ -1,11 +1,8 @@
 import * as ex from "excalibur";
 import { Dardo } from "./actors/dardo";
-import { HealthBar } from "./actors/health-bar";
-import { Inimigo } from "./actors/inimigo";
 
 import { stats } from "./stats";
 import { Alvo } from "./actors/alvo";
-import Config from "./config";
 
 import { animManager } from "./actors/animation-manager";
 import { Images } from "./resources";
@@ -48,14 +45,13 @@ export class Game extends ex.Scene {
   ];
 
   alvosAtuais: Array<Alvo> = [];
-  inimigos: Array<Inimigo> = [];
   rodadaAtual: number;
   questaoAtual: any;
   labelQuestao: ex.Label | undefined;
   gameOverlabel: any;
   fotoResposta: any;
   respostasJogador: Array<{ questao: any; respostaJogador: string }> = [];
-
+  perguntasJaFeitas: Array<number> = [];
   finalizado = false;
   constructor(engine: ex.Engine) {
     super(engine);
@@ -68,7 +64,7 @@ export class Game extends ex.Scene {
 
     this.desenharNuvens(engine);
     this.desenharDardo(engine);
-	  this.desenharBullets(engine);
+	  this.desenharPlacar(engine);
 
     this.novaRodada();
 
@@ -86,9 +82,13 @@ export class Game extends ex.Scene {
     });
   }
   novaRodada() {
-    this.questaoAtual = this.questoes[
-      Math.floor(Math.random() * 10) % this.questoes.length
-    ];
+    this.questaoAtual = null;
+    do {
+      const numeroSoteado = Math.floor(Math.random() * 10) % this.questoes.length;
+      if (!this.perguntasJaFeitas.includes(numeroSoteado)) {
+        this.questaoAtual = this.questoes[numeroSoteado];
+      }
+    } while(!this.questaoAtual)
 
     let i = 0;
 
@@ -115,9 +115,6 @@ export class Game extends ex.Scene {
     }
   }
   async callback(resposta: string) {
-    // guardar resposta
-    // matar os alvos
-    // chamar nova rodada
     this.respostasJogador.push({
       questao: this.questaoAtual,
       respostaJogador: resposta
@@ -147,7 +144,7 @@ export class Game extends ex.Scene {
     engine.add(dardo);
   }
 
-  desenharBullets(engine: ex.Engine) {
+  desenharPlacar(engine: ex.Engine) {
     const BulletsLabel = new ex.Label("Dardos: " + stats.bullets, 20, 50);
     BulletsLabel.color = ex.Color.White;
     BulletsLabel.scale = new ex.Vector(3, 3);
@@ -174,7 +171,6 @@ export class Game extends ex.Scene {
     }
     this.fotoResposta?.kill();
     this.rodadaAtual = 1;
-    this.inimigos.forEach(i => i.destroyOption());
     this.alvosAtuais.forEach(a => a.destroyOption());
     this.labelQuestao?.kill();
     this.novaRodada();
@@ -207,7 +203,6 @@ export class Game extends ex.Scene {
       this.gameOverlabel.scale = new ex.Vector(3, 3);
       this.gameOverlabel.actions.blink(1000, 1000, 400).repeatForever();
       engine.add(this.gameOverlabel);
-      this.inimigos.forEach(i => i.destroyOption());
       this.alvosAtuais.forEach(a => a.destroyOption());
       this.labelQuestao?.kill();
     }

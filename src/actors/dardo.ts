@@ -1,11 +1,9 @@
 import * as ex from "excalibur";
-import { gameSheet, Sounds, explosionSpriteSheet, Images } from "../resources";
+import { Sounds, explosionSpriteSheet, Images } from "../resources";
 import Config from "../config";
 import { Bullet } from "./bullet";
 import { Alvo } from "./alvo";
-import { animManager } from "./animation-manager";
 import { stats } from "../stats";
-import { Inimigo } from "./inimigo";
 
 type FireFunction = (engine: ex.Engine) => void;
 const throttle = function(this: any, func: FireFunction, throttle: number): FireFunction {
@@ -57,14 +55,9 @@ export class Dardo extends ex.Actor {
     }
 
     onPreCollision(evt: ex.PreCollisionEvent) {
-        if(evt.other instanceof Alvo || ex.Util.contains(Alvo.Bullets, evt.other) || evt.other instanceof Inimigo || ex.Util.contains(Inimigo.Bullets, evt.other)){
+        if(evt.other instanceof Alvo || ex.Util.contains(Alvo.Bullets, evt.other)){
             Sounds.hitSound.play();
             this.actions.blink(300, 300, 3);
-            stats.hp -= Config.enemyDamage;
-            if (stats.hp <= 0) {
-                stats.gameOver = true;
-                this.kill();
-            }
          }
     }
 

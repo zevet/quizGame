@@ -1,14 +1,9 @@
 // Main Game Logic
 import * as ex from 'excalibur';
-import Config from './config';
 import { Sounds, loader } from './resources';
 import { Game } from './game';
-import { stats } from './stats';
 
-const engine = new ex.Engine({
-    
-    // backgroundColor: ex.Color.Cyan
-});
+const engine = new ex.Engine({});
 engine.backgroundColor = ex.Color.fromRGB(0, 128, 255);
 engine.setAntialiasing(false);
 // Setup game scene

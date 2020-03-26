@@ -4,7 +4,6 @@ import Config from "../config";
 import { Bullet } from "./bullet";
 import { animManager } from "./animation-manager";
 import { stats } from "../stats";
-import { Inimigo } from "./inimigo";
 
 export class Alvo extends ex.Actor {
     // All bullets belonging to baddies
@@ -70,7 +69,7 @@ export class Alvo extends ex.Actor {
     // Fires before excalibur collision resoulation
     private onPreCollision(evt: ex.PreCollisionEvent) {
         // only kill a baddie if it collides with something that isn't a baddie or a baddie bullet
-        if(!(evt.other instanceof Alvo || evt.other instanceof Inimigo) &&
+        if(!(evt.other instanceof Alvo) &&
            !ex.Util.contains(Alvo.Bullets, evt.other)) {
             if ((evt.other instanceof Bullet)) {
                 Sounds.explodeSound.play();
@@ -80,7 +79,6 @@ export class Alvo extends ex.Actor {
                 }
     
                 stats.canShot = true;
-                stats.score += 100;
             }
          }
     }
