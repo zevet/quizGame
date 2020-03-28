@@ -77,7 +77,6 @@ export class Alvo extends ex.Actor {
                 if (this.explode) {
                     animManager.play(this.explode, this.pos);
                 }
-    
                 stats.canShot = true;
             }
          }
