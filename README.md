@@ -6,6 +6,8 @@ Jogo desenvolvido para a matéria de Tecnologia de Construção de Softwares da 
   Criar um [**quiz**](https://pt.wikipedia.org/wiki/Quiz) interativo, de forma que o usuário contribua para uma coleta de dados de forma agradável.
 
 ## O Jogo
+[**Demo**](https://hittheanswer.netlify.com/)
+
 ![image jogo](/res/printscreen.png)
 
 O jogo consiste em um dardo localizado na parte de baixo da tela do usuário e, na parte superior, existem 3 alvos que se movem horizontalmente tendo cada um uma opção para a pergunta exibida no topo da tela.
